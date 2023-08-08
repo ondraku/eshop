@@ -1,16 +1,30 @@
 version: '3.8'
 services:
-  db:
+  postgres:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=eshop-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
-      - '5433:5432'
+      - '5439:5432'
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - eshop-network-new
+  eshop:
+    image: eshop
+    build: .
+    ports:
+      - '127.0.0.1:8082:8082'
+    depends_on:
+      - postgres
+    networks:
+      - eshop-network-new
 volumes:
   db:
     driver: local
+networks:
+  eshop-network-new:
+    driver: bridge
